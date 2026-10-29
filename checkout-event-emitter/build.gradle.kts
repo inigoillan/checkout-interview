@@ -10,8 +10,6 @@ application {
 dependencies {
     implementation(project(":checkout-event-schema"))
     implementation(libs.kafka.clients)
-    implementation(libs.fory.json)
-    implementation(libs.jackson.databind)
     implementation(libs.slf4j.api)
     runtimeOnly(libs.log4j.core)
     runtimeOnly(libs.log4j.slf4j2.impl)

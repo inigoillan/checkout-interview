@@ -13,8 +13,6 @@ dependencies {
     implementation(libs.flink.clients)
     implementation(libs.flink.connector.kafka)
     implementation(libs.kafka.clients)
-    implementation(libs.fory.json)
-    implementation(libs.jackson.databind)
     implementation(libs.slf4j.api)
     implementation(libs.aws.sdk.s3)
     runtimeOnly(libs.log4j.core)
