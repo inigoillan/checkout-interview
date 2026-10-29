@@ -22,6 +22,10 @@ dependencies {
     // module's Kafka 4.3.2 client out from under kafka-streams — excluded
     // so the declared 4.3.2 client stays (connect-api is provided-scope
     // in the connector POM, so nothing else leaks in).
+    // Connect plugin API (provided-scope in the connector POM, so it must be
+    // declared explicitly wherever connector classes are referenced).
+    implementation(libs.connect.api)
+    implementation(libs.connect.json)
     implementation(libs.kafka.connect.s3) {
         exclude(group = "org.apache.kafka", module = "kafka-clients")
     }

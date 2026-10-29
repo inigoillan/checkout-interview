@@ -17,6 +17,8 @@ flink-clients = { module = "org.apache.flink:flink-clients", version.ref = "flin
 flink-connector-kafka = { module = "org.apache.flink:flink-connector-kafka", version.ref = "flink-connector-kafka" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "kafka" }
+connect-api = { module = "org.apache.kafka:connect-api", version.ref = "kafka" }
+connect-json = { module = "org.apache.kafka:connect-json", version.ref = "kafka" }
 fory-core = { module = "org.apache.fory:fory-core", version.ref = "fory" }
 fory-json = { module = "org.apache.fory:fory-json", version.ref = "fory" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
