@@ -21,10 +21,10 @@ Pinned latest-stable versions (Oct 2026):
 - Jackson 2.22.4, SLF4J 2.0.20, Log4j2 2.26.1
 - JUnit Jupiter 6.1.3, Testcontainers 2.0.5, AWS SDK v2 2.57.2 (S3), LocalStack `localstack/localstack:latest`
 
-Only `checkout-event-schema` contains source code (the shared record + Fory deserialiser).
-The other four modules are Gradle scaffolding with mandatory dependencies, a
-`prepareDockerContext` staging task, and a `Dockerfile`. Implement the
-`*App`/`*Job` entrypoints noted in each `build.gradle.kts`.
+`checkout-event-schema` holds the shared record + Fory deserialiser.
+The other four modules each ship a hello-world entrypoint (SLF4J + stdout),
+with mandatory dependencies, a `prepareDockerContext` staging task, and a
+`Dockerfile`.
 
 ## Prerequisites
 
@@ -114,7 +114,7 @@ Per module:
 | `checkout-count` | `com.checkout.count.CountJob` | `./gradlew :checkout-count:prepareDockerContext` then `docker build -t checkout-count:local -f checkout-count/Dockerfile checkout-count` |
 | `checkout-event-emitter` | `com.checkout.emitter.EventEmitterApp` | `./gradlew :checkout-event-emitter:prepareDockerContext` then `docker build -t checkout-event-emitter:local -f checkout-event-emitter/Dockerfile checkout-event-emitter`; run e.g. `docker run --rm --network checkout-interview_default checkout-event-emitter:local --topic checkout.events.raw --count 100` |
 
-Direct Gradle run (without Docker), once mains are implemented:
+Direct Gradle run (without Docker):
 
 ```bash
 ./gradlew :checkout-ingestor:run
@@ -122,6 +122,8 @@ Direct Gradle run (without Docker), once mains are implemented:
 ./gradlew :checkout-count:run
 ./gradlew :checkout-event-emitter:run --args="--topic checkout.events.raw --count 10"
 ```
+
+Each prints `Hello world from <module>` via SLF4J/Log4j2 and stdout.
 
 ## Run everything with Docker Compose
 

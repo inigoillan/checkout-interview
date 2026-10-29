@@ -4,7 +4,6 @@ plugins {
 }
 
 application {
-    // TODO: implement this entrypoint (scaffolding only, no source yet).
     mainClass.set("com.checkout.qualitycheck.QualityCheckApp")
 }
 
