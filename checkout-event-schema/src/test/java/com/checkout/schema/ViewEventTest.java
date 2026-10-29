@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class CheckoutEventTest {
+class ViewEventTest {
 
   @Test
   void deserialisesSnakeCaseJson() {
@@ -13,7 +13,7 @@ class CheckoutEventTest {
         {"event_id":"evt-1","user_id":1234,"postcode":"SW19","webpage":"www.website.com/index.html","timestamp":1611662684}
         """;
 
-    CheckoutEvent event = CheckoutEvents.fromJson(json.trim());
+    ViewEvent event = ViewEvents.fromJson(json.trim());
 
     assertEquals("evt-1", event.eventId());
     assertEquals(1234, event.userId());
@@ -24,9 +24,9 @@ class CheckoutEventTest {
 
   @Test
   void roundTrip() {
-    CheckoutEvent original = new CheckoutEvent("evt-2", 4321, "SW19", "www.website.com/index.html", 1611662684L);
+    ViewEvent original = new ViewEvent("evt-2", 4321, "SW19", "www.website.com/index.html", 1611662684L);
 
-    CheckoutEvent parsed = CheckoutEvents.fromJson(CheckoutEvents.toJson(original));
+    ViewEvent parsed = ViewEvents.fromJson(ViewEvents.toJson(original));
 
     assertEquals(original, parsed);
   }

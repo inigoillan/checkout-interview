@@ -3,7 +3,7 @@ package com.checkout.schema;
 import org.apache.fory.json.annotation.JsonProperty;
 
 /**
- * Canonical checkout event shared by all modules.
+ * Canonical view event shared by all modules.
  *
  * <p>Wire format is JSON with snake_case field names:
  * <pre>
@@ -17,7 +17,7 @@ import org.apache.fory.json.annotation.JsonProperty;
  * </pre>
  * {@code timestamp} is expressed in seconds since the epoch.
  */
-public record CheckoutEvent(
+public record ViewEvent(
     @JsonProperty("event_id") String eventId,
     @JsonProperty("user_id") int userId,
     @JsonProperty("postcode") String postcode,

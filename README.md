@@ -62,7 +62,7 @@ Testcontainers (Kafka, LocalStack) needs a running Docker daemon.
 ./gradlew :checkout-event-emitter:test
 ```
 
-`checkout-event-schema` ships two real tests (`CheckoutEventTest`):
+`checkout-event-schema` ships two real tests (`ViewEventTest`):
 snake_case JSON deserialisation and a Fory round-trip.
 
 ## Stage jar + dependencies (for Docker)
@@ -178,7 +178,7 @@ KAFKA_BOOTSTRAP_SERVERS=localhost:29092 ./gradlew :checkout-event-emitter:run --
 
 ## Event schema
 
-`CheckoutEvent` (`com.checkout.schema`, Java record):
+`ViewEvent` (`com.checkout.schema`, Java record):
 
 - `event_id: string`
 - `user_id: int`
