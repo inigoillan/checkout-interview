@@ -3,7 +3,7 @@
 #   ./gradlew :checkout-ingestor:prepareDockerContext
 # Then build from THIS module directory:
 #   docker build -t checkout-ingestor:local -f Dockerfile .
-FROM eclipse-temurin:17-jre-jammy AS runtime
+FROM amazoncorretto:17 AS runtime
 
 WORKDIR /app
 
