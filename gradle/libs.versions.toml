@@ -15,7 +15,7 @@ flink-streaming-java = { module = "org.apache.flink:flink-streaming-java", versi
 flink-clients = { module = "org.apache.flink:flink-clients", version.ref = "flink" }
 flink-connector-kafka = { module = "org.apache.flink:flink-connector-kafka", version.ref = "flink-connector-kafka" }
 flink-connector-files = { module = "org.apache.flink:flink-connector-files", version.ref = "flink" }
-flink-s3-fs-presto = { module = "org.apache.flink:flink-s3-fs-presto", version.ref = "flink" }
+flink-s3-fs-native = { module = "org.apache.flink:flink-s3-fs-native", version.ref = "flink" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "kafka" }
 fory-core = { module = "org.apache.fory:fory-core", version.ref = "fory" }

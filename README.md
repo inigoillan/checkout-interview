@@ -7,7 +7,7 @@ Modules:
 | Module | Type | Stack |
 |---|---|---|
 | `checkout-event-schema` | shared library | Apache Fory JSON (`fory-json`), Jackson, SLF4J + Log4j2 |
-| `checkout-ingestor` | Flink job, Kafka → S3 data lake | Flink DataStream, FileSink, Flink Kafka connector, Presto S3 FS, AWS SDK S3 |
+| `checkout-ingestor` | Flink job, Kafka → S3 data lake | Flink DataStream, FileSink, Flink Kafka connector, Native S3 FS, AWS SDK S3 |
 | `checkout-quality-check` | Kafka Streams QC gate | Kafka Streams, Kafka clients, Fory JSON |
 | `checkout-count` | Flink aggregator | Flink DataStream, Flink Kafka connector, AWS SDK S3, Fory JSON |
 | `checkout-event-emitter` | CLI → Kafka topic | Kafka clients, Fory JSON |
