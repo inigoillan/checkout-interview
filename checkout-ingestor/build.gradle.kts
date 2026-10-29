@@ -37,6 +37,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
     testImplementation(libs.testcontainers.core)
+    testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.localstack)
 }
