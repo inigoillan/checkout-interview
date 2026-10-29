@@ -1,0 +1,36 @@
+plugins {
+    java
+    application
+}
+
+application {
+    // TODO: implement this entrypoint (scaffolding only, no source yet).
+    mainClass.set("com.checkout.emitter.EventEmitterApp")
+}
+
+dependencies {
+    implementation(project(":checkout-event-schema"))
+    implementation(libs.kafka.clients)
+    implementation(libs.fory.json)
+    implementation(libs.jackson.databind)
+    implementation(libs.slf4j.api)
+    runtimeOnly(libs.log4j.core)
+    runtimeOnly(libs.log4j.slf4j2.impl)
+
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
+    testImplementation(libs.testcontainers.core)
+    testImplementation(libs.testcontainers.kafka)
+}
+
+// Generates build/docker-context/libs/ containing this module's jar
+// plus every runtime dependency jar. The Dockerfiles COPY this folder.
+tasks.register<Copy>("prepareDockerContext") {
+    dependsOn("jar")
+    description = "Stages the app jar and all runtime dependencies for Docker."
+    group = "docker"
+    from(tasks.named("jar"))
+    from(configurations.runtimeClasspath)
+    into(layout.buildDirectory.dir("docker-context/libs"))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
