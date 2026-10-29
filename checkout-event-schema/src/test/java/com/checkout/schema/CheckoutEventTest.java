@@ -10,21 +10,21 @@ class CheckoutEventTest {
   void deserialisesSnakeCaseJson() {
     String json =
         """
-        {"event_id":"evt-1","user_id":42,"postcode":"E1 6AN","webpage":"/checkout/confirm","timestamp":1718559600}
+        {"event_id":"evt-1","user_id":1234,"postcode":"SW19","webpage":"www.website.com/index.html","timestamp":1611662684}
         """;
 
     CheckoutEvent event = CheckoutEvents.fromJson(json.trim());
 
     assertEquals("evt-1", event.eventId());
-    assertEquals(42, event.userId());
-    assertEquals("E1 6AN", event.postcode());
-    assertEquals("/checkout/confirm", event.webpage());
-    assertEquals(1718559600L, event.timestamp());
+    assertEquals(1234, event.userId());
+    assertEquals("SW19", event.postcode());
+    assertEquals("www.website.com/index.html", event.webpage());
+    assertEquals(1611662684L, event.timestamp());
   }
 
   @Test
   void roundTrip() {
-    CheckoutEvent original = new CheckoutEvent("evt-2", 7, "W1A 1AA", "/cart", 1718559700L);
+    CheckoutEvent original = new CheckoutEvent("evt-2", 4321, "SW19", "www.website.com/index.html", 1611662684L);
 
     CheckoutEvent parsed = CheckoutEvents.fromJson(CheckoutEvents.toJson(original));
 

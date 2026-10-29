@@ -19,15 +19,7 @@ public final class CheckoutEvents {
     return JSON.fromJson(json, CheckoutEvent.class);
   }
 
-  public static CheckoutEvent fromJsonBytes(byte[] jsonUtf8) {
-    return JSON.fromJson(jsonUtf8, CheckoutEvent.class);
-  }
-
   public static String toJson(CheckoutEvent event) {
     return JSON.toJson(event);
-  }
-
-  public static byte[] toJsonBytes(CheckoutEvent event) {
-    return JSON.toJsonBytes(event);
   }
 }
