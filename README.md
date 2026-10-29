@@ -30,15 +30,19 @@ with mandatory dependencies, a `prepareDockerContext` staging task, and a
 
 - JDK 17+ to run Gradle (project toolchains to Java 17; Gradle auto-provisions it if missing).
 - Docker + Docker Compose v2 (for Testcontainers and for `docker-compose.yml`).
-- No global Gradle needed: use `./gradlew`.
+- GNU `make` (all workflows below go through the `Makefile`; raw `./gradlew` /
+  `docker compose` equivalents are listed after each `make` target).
+- No global Gradle needed: the `Makefile` uses `./gradlew`.
 
 ## Compile
 
 ```bash
-# whole project, no tests
-./gradlew build -x test
+make build          # ./gradlew build -x test
+```
 
-# single module
+Single module (raw Gradle):
+
+```bash
 ./gradlew :checkout-event-schema:build -x test
 ./gradlew :checkout-ingestor:build -x test
 ./gradlew :checkout-quality-check:build -x test
@@ -51,10 +55,12 @@ with mandatory dependencies, a `prepareDockerContext` staging task, and a
 Testcontainers (Kafka, LocalStack) needs a running Docker daemon.
 
 ```bash
-# all tests
-./gradlew test
+make test           # ./gradlew test
+```
 
-# per module
+Per module (raw Gradle):
+
+```bash
 ./gradlew :checkout-event-schema:test
 ./gradlew :checkout-ingestor:test
 ./gradlew :checkout-quality-check:test
@@ -74,30 +80,30 @@ Each runnable module has a `prepareDockerContext` task that creates:
 ```
 
 ```bash
-./gradlew :checkout-ingestor:prepareDockerContext
-./gradlew :checkout-quality-check:prepareDockerContext
-./gradlew :checkout-count:prepareDockerContext
-./gradlew :checkout-event-emitter:prepareDockerContext
-
-# or all at once
-./gradlew prepareDockerContext  # runs in every subproject that defines it
+make stage          # stages all four runnable modules
+# raw equivalent:
+# ./gradlew :checkout-ingestor:prepareDockerContext \
+#           :checkout-quality-check:prepareDockerContext \
+#           :checkout-count:prepareDockerContext \
+#           :checkout-event-emitter:prepareDockerContext
 ls checkout-ingestor/build/docker-context/libs | head
 ```
 
-Dockerfiles (`checkout-*/Dockerfile`) are single-stage JRE images that
-`COPY build/docker-context/libs /app/libs` and run
+Dockerfiles (`checkout-*/Dockerfile`, base `amazoncorretto:17`) are single-stage
+images that `COPY build/docker-context/libs /app/libs` and run
 `java -cp "/app/libs/*" <MainClass>`.
 
 ## Run a module Docker image
 
 ```bash
-# 1. stage libs
-./gradlew :checkout-ingestor:prepareDockerContext
+make docker-build   # make stage + docker compose build (compiles everything)
 
-# 2. build image (context MUST be the module dir, Dockerfile expects build/ inside it)
+# per-module standalone image, e.g. ingestor:
+./gradlew :checkout-ingestor:prepareDockerContext
+# (context MUST be the module dir, Dockerfile expects build/ inside it)
 docker build -t checkout-ingestor:local -f checkout-ingestor/Dockerfile checkout-ingestor
 
-# 3. run (join the compose network to reach kafka/localstack, or override env)
+# run (join the compose network to reach kafka/localstack, or override env)
 docker run --rm \
   --network checkout-interview_default \
   -e KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
@@ -134,19 +140,18 @@ the three long-running services (`checkout-ingestor`,
 `checkout.events.raw`, `checkout.events.sanitised`, `checkout.counts` via `kafka-init`.
 
 ```bash
-# stage all runnable jars first (Dockerfiles COPY this folder)
-./gradlew :checkout-ingestor:prepareDockerContext \
-          :checkout-quality-check:prepareDockerContext \
-          :checkout-count:prepareDockerContext \
-          :checkout-event-emitter:prepareDockerContext
+make up             # stage + docker compose up --build (foreground, compiles everything)
+make up-d           # detached variant
+make logs           # follow logs
+make down           # docker compose down -v
+make ps             # container status
 
-docker compose build
-docker compose up
-
-# or detached
-docker compose up --build -d
-docker compose logs -f
-docker compose down -v
+# raw equivalents:
+# docker compose build
+# docker compose up
+# docker compose up --build -d
+# docker compose logs -f
+# docker compose down -v
 ```
 
 Kafka exposed on `localhost:29092` (host) / `kafka:9092` (compose network).
@@ -156,8 +161,11 @@ Send test traffic with the emitter (runs unconditionally as a one-shot service,
 default args `--topic checkout.events.raw --count 100`):
 
 ```bash
-# override args for a one-off run:
-docker compose run --rm checkout-event-emitter --topic checkout.events.raw --count 10
+make emitter                              # default args
+make emitter ARGS="--topic checkout.events.raw --count 10"   # custom args
+
+# raw equivalent:
+# docker compose run --rm checkout-event-emitter --topic checkout.events.raw --count 10
 ```
 
 Or standalone Docker (host network example):
@@ -192,6 +200,7 @@ Use `CheckoutEvents.fromJson(String)` / `fromJsonBytes(byte[])` /
 ## Layout
 
 ```
+Makefile
 settings.gradle.kts
 build.gradle.kts
 gradle/libs.versions.toml
