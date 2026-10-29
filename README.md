@@ -150,7 +150,17 @@ docker compose down -v
 Kafka exposed on `localhost:29092` (host) / `kafka:9092` (compose network).
 LocalStack S3 on `http://localhost:4566`.
 
-Send test traffic with the emitter (host network example):
+Send test traffic with the emitter (opt-in Compose service, `profiles: ["emitter"]`):
+
+```bash
+./gradlew :checkout-event-emitter:prepareDockerContext
+docker compose --profile emitter build checkout-event-emitter
+docker compose --profile emitter up checkout-event-emitter
+# override args (default: --topic checkout.events.raw --count 100):
+docker compose --profile emitter run --rm checkout-event-emitter --topic checkout.events.raw --count 10
+```
+
+Or standalone Docker (host network example):
 
 ```bash
 ./gradlew :checkout-event-emitter:prepareDockerContext
