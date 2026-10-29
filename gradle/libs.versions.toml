@@ -9,16 +9,15 @@ junit = "6.1.3"
 testcontainers = "2.0.5"
 jackson = "2.22.4"
 aws-sdk = "2.57.2"
-kafka-connect-s3 = "12.1.11"
 
 [libraries]
 flink-streaming-java = { module = "org.apache.flink:flink-streaming-java", version.ref = "flink" }
 flink-clients = { module = "org.apache.flink:flink-clients", version.ref = "flink" }
 flink-connector-kafka = { module = "org.apache.flink:flink-connector-kafka", version.ref = "flink-connector-kafka" }
+flink-connector-files = { module = "org.apache.flink:flink-connector-files", version.ref = "flink" }
+flink-s3-fs-presto = { module = "org.apache.flink:flink-s3-fs-presto", version.ref = "flink" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "kafka" }
-connect-api = { module = "org.apache.kafka:connect-api", version.ref = "kafka" }
-connect-json = { module = "org.apache.kafka:connect-json", version.ref = "kafka" }
 fory-core = { module = "org.apache.fory:fory-core", version.ref = "fory" }
 fory-json = { module = "org.apache.fory:fory-json", version.ref = "fory" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
@@ -27,7 +26,6 @@ log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 aws-sdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }
-kafka-connect-s3 = { module = "io.confluent:kafka-connect-s3", version.ref = "kafka-connect-s3" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }

@@ -7,7 +7,7 @@ Modules:
 | Module | Type | Stack |
 |---|---|---|
 | `checkout-event-schema` | shared library | Apache Fory JSON (`fory-json`), Jackson, SLF4J + Log4j2 |
-| `checkout-ingestor` | Kafka Streams service → data lake | Kafka Streams, Kafka clients, AWS SDK S3, Fory JSON |
+| `checkout-ingestor` | Flink job, Kafka → S3 data lake | Flink DataStream, FileSink, Flink Kafka connector, Presto S3 FS, AWS SDK S3 |
 | `checkout-quality-check` | Kafka Streams QC gate | Kafka Streams, Kafka clients, Fory JSON |
 | `checkout-count` | Flink aggregator | Flink DataStream, Flink Kafka connector, AWS SDK S3, Fory JSON |
 | `checkout-event-emitter` | CLI → Kafka topic | Kafka clients, Fory JSON |
@@ -20,7 +20,6 @@ Pinned latest-stable versions (Oct 2026):
 - Fory 1.7.7 (`fory-core`, `fory-json`)
 - Jackson 2.22.4, SLF4J 2.0.20, Log4j2 2.26.1
 - JUnit Jupiter 6.1.3, Testcontainers 2.0.5, AWS SDK v2 2.57.2 (S3), LocalStack `localstack/localstack:3.8` (pinned: `latest` now requires a Pro auth token)
-- Confluent kafka-connect-s3 12.1.11 (ingestor only, from `https://packages.confluent.io/maven/` — not on Maven Central; transitive `kafka-clients` excluded to keep Kafka 4.3.2 aligned with Kafka Streams)
 
 `checkout-event-schema` holds the shared record + Fory deserialiser.
 The other four modules each ship a hello-world entrypoint (SLF4J + stdout),
@@ -208,7 +207,7 @@ gradle/libs.versions.toml
 gradle.properties
 docker-compose.yml
 checkout-event-schema/        # shared record + Fory serde + tests
-checkout-ingestor/            # Kafka Streams -> lake (scaffold) + Dockerfile
+checkout-ingestor/            # Flink FileSink job, Kafka -> S3 lake + Dockerfile
 checkout-quality-check/       # Kafka Streams QC gate (scaffold) + Dockerfile
 checkout-count/               # Flink aggregator (scaffold) + Dockerfile
 checkout-event-emitter/       # Kafka CLI producer (scaffold) + Dockerfile
