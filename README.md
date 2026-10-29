@@ -20,6 +20,7 @@ Pinned latest-stable versions (Oct 2026):
 - Fory 1.7.7 (`fory-core`, `fory-json`)
 - Jackson 2.22.4, SLF4J 2.0.20, Log4j2 2.26.1
 - JUnit Jupiter 6.1.3, Testcontainers 2.0.5, AWS SDK v2 2.57.2 (S3), LocalStack `localstack/localstack:3.8` (pinned: `latest` now requires a Pro auth token)
+- Confluent kafka-connect-s3 12.1.11 (ingestor only, from `https://packages.confluent.io/maven/` — not on Maven Central; transitive `kafka-clients` excluded to keep Kafka 4.3.2 aligned with Kafka Streams)
 
 `checkout-event-schema` holds the shared record + Fory deserialiser.
 The other four modules each ship a hello-world entrypoint (SLF4J + stdout),
