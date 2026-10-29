@@ -128,15 +128,17 @@ Each prints `Hello world from <module>` via SLF4J/Log4j2 and stdout.
 ## Run everything with Docker Compose
 
 `docker-compose.yml` (root) starts Kafka (KRaft), LocalStack (S3),
-and the three long-running services: `checkout-ingestor`,
-`checkout-quality-check`, `checkout-count`. It also creates topics
+the three long-running services (`checkout-ingestor`,
+`checkout-quality-check`, `checkout-count`), and the one-shot
+`checkout-event-emitter`. It also creates topics
 `checkout.events.raw`, `checkout.events.sanitised`, `checkout.counts` via `kafka-init`.
 
 ```bash
 # stage all runnable jars first (Dockerfiles COPY this folder)
 ./gradlew :checkout-ingestor:prepareDockerContext \
           :checkout-quality-check:prepareDockerContext \
-          :checkout-count:prepareDockerContext
+          :checkout-count:prepareDockerContext \
+          :checkout-event-emitter:prepareDockerContext
 
 docker compose build
 docker compose up
@@ -150,14 +152,12 @@ docker compose down -v
 Kafka exposed on `localhost:29092` (host) / `kafka:9092` (compose network).
 LocalStack S3 on `http://localhost:4566`.
 
-Send test traffic with the emitter (opt-in Compose service, `profiles: ["emitter"]`):
+Send test traffic with the emitter (runs unconditionally as a one-shot service,
+default args `--topic checkout.events.raw --count 100`):
 
 ```bash
-./gradlew :checkout-event-emitter:prepareDockerContext
-docker compose --profile emitter build checkout-event-emitter
-docker compose --profile emitter up checkout-event-emitter
-# override args (default: --topic checkout.events.raw --count 100):
-docker compose --profile emitter run --rm checkout-event-emitter --topic checkout.events.raw --count 10
+# override args for a one-off run:
+docker compose run --rm checkout-event-emitter --topic checkout.events.raw --count 10
 ```
 
 Or standalone Docker (host network example):

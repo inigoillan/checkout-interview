@@ -112,7 +112,6 @@ services:
       OUTPUT_TOPIC: checkout.counts
 
   checkout-event-emitter:
-    profiles: ["emitter"]
     build:
       context: ./checkout-event-emitter
       dockerfile: Dockerfile
