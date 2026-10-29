@@ -4,6 +4,7 @@ services:
   kafka:
     image: apache/kafka:4.3.2
     hostname: kafka
+    attach: false
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -43,6 +44,7 @@ services:
 
   localstack:
     image: localstack/localstack:3.8
+    attach: false
     ports:
       - "4566:4566"
     environment:
