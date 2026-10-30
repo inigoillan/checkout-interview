@@ -14,7 +14,15 @@ dependencies {
     implementation(libs.flink.connector.kafka)
     implementation(libs.flink.connector.files)
     implementation(libs.flink.s3.fs.native)
+    implementation(libs.flink.parquet)
+    implementation(libs.flink.avro)
+    implementation(libs.avro)
+    implementation(libs.parquet.avro)
+    implementation(libs.hadoop.common)
+    implementation(libs.hadoop.mapreduce.client.core)
     implementation(libs.kafka.clients)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.dataformat.yaml)
     implementation(libs.slf4j.api)
     implementation(libs.aws.sdk.s3)
     runtimeOnly(libs.log4j.core)
@@ -30,7 +38,7 @@ dependencies {
 
 // Generates build/docker-context/libs/ containing this module's jar
 // plus every runtime dependency jar. The Dockerfiles COPY this folder.
-tasks.register<Copy>("prepareDockerContext") {
+tasks.register<Sync>("prepareDockerContext") {
     dependsOn("jar")
     description = "Stages the app jar and all runtime dependencies for Docker."
     group = "docker"

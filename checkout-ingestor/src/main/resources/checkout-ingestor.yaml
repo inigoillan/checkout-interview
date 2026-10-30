@@ -1,0 +1,20 @@
+kafka:
+  bootstrap-servers: localhost:29092
+  input-topic: checkout.events.raw
+  group-id: checkout-ingestor
+
+s3:
+  region: eu-west-1
+  endpoint: ""
+  bucket: checkout-lake-raw
+  landing-prefix: landing
+  dlq-prefix: dlq
+  access-key: ""
+  secret-key: ""
+
+checkpoints:
+  location: s3://checkout-checkpoints/checkout-ingestor
+  interval-seconds: 900
+
+flink:
+  sink-parallelism: 1

@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "FailedEvent",
+  "namespace": "com.checkout.ingestor.avro",
+  "fields": [
+    {"name": "event", "type": "string"},
+    {"name": "kafka_offset", "type": "long"},
+    {"name": "kafka_partition", "type": "int"},
+    {"name": "kafka_topic", "type": "string"},
+    {"name": "processing_timestamp", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+  ]
+}

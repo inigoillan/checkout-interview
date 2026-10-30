@@ -16,10 +16,10 @@ Pinned latest-stable versions (Oct 2026):
 
 - Gradle 9.8.2, Java 17 (toolchain + `release = 17`)
 - Flink 2.3.0, Flink Kafka connector 4.0.0-2.0
-- Kafka / Kafka Streams 4.3.2 (Docker: `apache/kafka:4.3.2`)
+- Kafka / Kafka Streams 4.4.0 (Docker: `apache/kafka:4.4.0`)
 - Fory 1.7.7 (`fory-core`, `fory-json`)
 - Jackson 2.22.4, SLF4J 2.0.20, Log4j2 2.26.1
-- JUnit Jupiter 6.1.3, Testcontainers 2.0.5, AWS SDK v2 2.57.2 (S3), LocalStack `localstack/localstack:3.8` (pinned: `latest` now requires a Pro auth token)
+- JUnit Jupiter 6.1.3, Testcontainers 2.0.5, AWS SDK v2 2.57.2 (S3), LocalStack `localstack/localstack:4.14` (pinned: newer tags require a LocalStack auth token)
 
 `checkout-event-schema` holds the shared record + Fory deserialiser.
 The other four modules each ship a hello-world entrypoint (SLF4J + stdout),
@@ -194,8 +194,8 @@ KAFKA_BOOTSTRAP_SERVERS=localhost:29092 ./gradlew :checkout-event-emitter:run --
 - `webpage: string`
 - `timestamp: long` (seconds)
 
-Use `CheckoutEvents.fromJson(String)` / `fromJsonBytes(byte[])` /
-`toJson(...)` / `toJsonBytes(...)` (Apache Fory JSON, thread-safe singleton).
+Use `ViewEvents.fromJson(String)` / `ViewEvents.toJson(ViewEvent)` (Apache Fory JSON,
+thread-safe shared instance).
 
 ## checkout-count
 
@@ -247,6 +247,36 @@ Run the tests (Docker is needed for everything except the unit tests):
 
 The tests are tagged `unit`, `integration-kafka`, `integration-s3`, and `e2e`.
 
+## checkout-ingestor
+
+Reads raw view events from `checkout.events.raw` and lands them in S3 as Parquet, with no
+validation beyond parsing. Events that can't be parsed into a `ViewEvent` go to a DLQ.
+Delivery is exactly-once, using checkpoints stored in S3.
+
+Configuration lives in `checkout-ingestor/src/main/resources/checkout-ingestor.yaml`. Set
+`CHECKOUT_INGESTOR_CONFIG` to a file path to override it. Compose mounts
+`checkout-ingestor/config/checkout-ingestor.compose.yaml` (30-second checkpoints) for the
+containerised job. `KAFKA_BOOTSTRAP_SERVERS`, `AWS_ENDPOINT_URL`, `AWS_REGION`,
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` override the matching settings.
+
+Output layout:
+
+```
+s3://checkout-lake-raw/landing/date=YYYY-MM-DD/hour=HH/part-*.parquet
+s3://checkout-lake-raw/dlq/date=YYYY-MM-DD/part-*.parquet
+```
+
+Landing files contain `event_id`, `user_id`, `postcode`, `webpage` and `timestamp` (epoch
+seconds). Partition values come from the path only. DLQ files contain `event`, `kafka_offset`,
+`kafka_partition`, `kafka_topic` and `processing_timestamp`. The DLQ `date` comes from the path
+only, and it is the UTC date of processing. Hours with no events produce no files.
+
+Run the tests (Docker is needed for everything except the unit tests):
+
+```bash
+./gradlew :checkout-ingestor:test
+```
+
 ## Layout
 
 ```
@@ -260,5 +290,5 @@ checkout-event-schema/        # shared record + Fory serde + tests
 checkout-ingestor/            # Flink FileSink job, Kafka -> S3 lake + Dockerfile
 checkout-quality-check/       # Kafka Streams QC gate (scaffold) + Dockerfile
 checkout-count/               # Flink aggregator (Kafka -> S3 Parquet) + config + Dockerfile
-checkout-event-emitter/       # Kafka CLI producer (scaffold) + Dockerfile
+checkout-event-emitter/       # Kafka CLI producer (--topic, --count) + Dockerfile
 ```

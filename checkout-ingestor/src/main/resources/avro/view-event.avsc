@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "ViewEvent",
+  "namespace": "com.checkout.ingestor.avro",
+  "fields": [
+    {"name": "event_id", "type": ["null", "string"], "default": null},
+    {"name": "user_id", "type": "int"},
+    {"name": "postcode", "type": ["null", "string"], "default": null},
+    {"name": "webpage", "type": ["null", "string"], "default": null},
+    {"name": "timestamp", "type": "long"}
+  ]
+}

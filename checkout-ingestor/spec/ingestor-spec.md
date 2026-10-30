@@ -33,6 +33,7 @@ The output files should follow the schema:
 
 date and hour are partition keys encoded in the path following the `date=YYYY-MM-DD/hour=HH` format with hours padded to 2 digits. They are derived from the timestamp (in UTC) field on the view event
 Empty hours won't produce any files
+Parquet files use the Parquet library's default compression, and Flink's default file rolling, which closes files on each checkpoint.
 
 ### Source code modularity principles
 
@@ -49,6 +50,7 @@ For integration and end to end tests, we will use Testcontainers to run localsta
 Unit test should run without any S3 or Kafka considerations
 Integration test should run with either S3 (via localstack) or Kafka but never both in the same test.
 End to end tests should run using Kafka, S3 (via localstack)
+The end to end tests must include a restart test, which fails a task mid-stream and verifies that the landed events have no duplicates and no losses, and a DLQ test, which verifies that malformed events are written to the DLQ.
 
 
 ### Volume expectations
@@ -87,7 +89,7 @@ The schema would be as follows:
 | processing_timestamp | timestamp    |                  |
 
 Processing timestamp is the wall clock timestamp in UTC of when the data was processed by the ingestor and failed.
-date is the partition key encoded in the path following the `date=YYYY-MM-DD` format. It is derived from the processing timestamp
+date is the partition key encoded in the path following the `date=YYYY-MM-DD` format. It is derived from the processing timestamp. The DLQ file body excludes `date`, which comes from the path only.
 
 
 ### Logging

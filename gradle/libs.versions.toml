@@ -1,7 +1,7 @@
 [versions]
 flink = "2.3.0"
 flink-connector-kafka = "4.0.0-2.0"
-kafka = "4.3.2"
+kafka = "4.4.0"
 fory = "1.7.7"
 slf4j = "2.0.20"
 log4j = "2.26.1"
@@ -20,6 +20,7 @@ flink-connector-kafka = { module = "org.apache.flink:flink-connector-kafka", ver
 flink-connector-files = { module = "org.apache.flink:flink-connector-files", version.ref = "flink" }
 flink-s3-fs-native = { module = "org.apache.flink:flink-s3-fs-native", version.ref = "flink" }
 flink-parquet = { module = "org.apache.flink:flink-parquet", version.ref = "flink" }
+flink-avro = { module = "org.apache.flink:flink-avro", version.ref = "flink" }
 flink-statebackend-rocksdb = { module = "org.apache.flink:flink-statebackend-rocksdb", version.ref = "flink" }
 flink-test-utils = { module = "org.apache.flink:flink-test-utils", version.ref = "flink" }
 avro = { module = "org.apache.avro:avro", version.ref = "avro" }
