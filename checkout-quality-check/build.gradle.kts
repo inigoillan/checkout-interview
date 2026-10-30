@@ -11,6 +11,8 @@ dependencies {
     implementation(project(":checkout-event-schema"))
     implementation(libs.kafka.streams)
     implementation(libs.kafka.clients)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.dataformat.yaml)
     implementation(libs.slf4j.api)
     runtimeOnly(libs.log4j.core)
     runtimeOnly(libs.log4j.slf4j2.impl)

@@ -1,0 +1,19 @@
+kafka:
+  bootstrap-servers: localhost:29092
+  application-id: checkout-quality-check
+  input-topic: checkout.events.raw
+  output-topic: checkout.events.sanitised
+  dlq-topic: checkout.qualitycheck.dlq
+  streams: {}
+
+checks:
+  event-id:
+    enabled: true
+  postcode:
+    enabled: true
+  webpage:
+    enabled: true
+  timestamp:
+    enabled: true
+    max-age-seconds: 86400
+    max-future-seconds: 600
