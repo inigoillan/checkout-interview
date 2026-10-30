@@ -1,0 +1,27 @@
+# Configuration used by docker-compose.yml. The AWS endpoint comes from AWS_ENDPOINT_URL.
+kafka:
+  bootstrap-servers: kafka:9092
+  input-topic: checkout.events.sanitised
+  start-offset: earliest
+
+s3:
+  region: eu-west-1
+  endpoint:
+  output:
+    bucket: checkout-lake-raw
+    prefix: counts
+  dlq:
+    bucket: checkout-lake-raw
+    prefix: dlq
+  checkpoints:
+    location: s3://checkout-checkpoints/checkout-count
+
+flink:
+  parallelism:
+    sink: 1
+  watermark:
+    bound: 30m
+    idleness: 1m
+  checkpointing:
+    interval: 5m
+    unaligned: true

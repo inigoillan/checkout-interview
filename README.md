@@ -197,6 +197,56 @@ KAFKA_BOOTSTRAP_SERVERS=localhost:29092 ./gradlew :checkout-event-emitter:run --
 Use `CheckoutEvents.fromJson(String)` / `fromJsonBytes(byte[])` /
 `toJson(...)` / `toJsonBytes(...)` (Apache Fory JSON, thread-safe singleton).
 
+## checkout-count
+
+Reads view events from `checkout.events.sanitised`, counts them per postcode in one-minute
+tumbling windows, and writes Parquet files to S3. Events that arrive after their window has
+closed go to a `dlq` folder.
+
+Configuration lives in `checkout-count/src/main/resources/checkout-count.yaml`. Set
+`CHECKOUT_COUNT_CONFIG` to a file path to override it. Compose mounts
+`checkout-count/config/checkout-count.compose.yaml` for the containerised job.
+
+| Key | Default | Purpose |
+|---|---|---|
+| `kafka.bootstrap-servers` | `localhost:29092` | Kafka bootstrap servers |
+| `kafka.input-topic` | `checkout.events.sanitised` | Source topic |
+| `kafka.start-offset` | `earliest` | `earliest`, `latest`, or `committed` |
+| `s3.region` | `eu-west-1` | AWS region |
+| `s3.endpoint` | blank | S3 endpoint; `AWS_ENDPOINT_URL` is used when blank |
+| `s3.output` | `checkout-lake-raw` / `counts` | Bucket and prefix for counts |
+| `s3.dlq` | `checkout-lake-raw` / `dlq` | Bucket and prefix for late events |
+| `s3.checkpoints.location` | `s3://checkout-checkpoints/checkout-count` | Checkpoint storage |
+| `flink.parallelism.sink` | `1` | Parallelism of both sinks |
+| `flink.watermark.bound` | `30m` | Out-of-orderness bound on event time |
+| `flink.watermark.idleness` | `1m` | Idle partitions stop holding back the watermark |
+| `flink.checkpointing.interval` | `5m` | Checkpoint interval |
+| `flink.checkpointing.unaligned` | `true` | Unaligned checkpoints |
+
+Output layout:
+
+```
+s3://checkout-lake-raw/counts/date=YYYY-MM-DD/hour=HH/part-*
+s3://checkout-lake-raw/dlq/date=YYYY-MM-DD/part-*
+```
+
+Count rows have `time_window` (UTC window start, minute granularity), `postcode`, and
+`count`. Dead-letter rows have `payload` (the original JSON), `kafka_timestamp`, and
+`processing_timestamp`, both in epoch milliseconds. Partition values appear only in the path.
+Hours with no events produce no files.
+
+Consumers should treat an hour as complete 30 minutes after it ends, measured in event time,
+so `hour=10` is final once events timestamped after 10:30 have been seen. Filter out the
+current hour and any hour that has not reached that point.
+
+Run the tests (Docker is needed for everything except the unit tests):
+
+```bash
+./gradlew :checkout-count:test
+```
+
+The tests are tagged `unit`, `integration-kafka`, `integration-s3`, and `e2e`.
+
 ## Layout
 
 ```
@@ -209,6 +259,6 @@ docker-compose.yml
 checkout-event-schema/        # shared record + Fory serde + tests
 checkout-ingestor/            # Flink FileSink job, Kafka -> S3 lake + Dockerfile
 checkout-quality-check/       # Kafka Streams QC gate (scaffold) + Dockerfile
-checkout-count/               # Flink aggregator (scaffold) + Dockerfile
+checkout-count/               # Flink aggregator (Kafka -> S3 Parquet) + config + Dockerfile
 checkout-event-emitter/       # Kafka CLI producer (scaffold) + Dockerfile
 ```
