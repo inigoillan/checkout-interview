@@ -24,8 +24,10 @@ public final class EventEmitterApp {
 
   public static void main(String[] args) {
     LOG.info("Starting to emit event from checkout-event-emitter");
+    Integer count = parseCount(args);
 
     EmitterConfig config = new EnvEmitterConfig();
+    String topic = parseTopic(args, config.getKafkaTopic());
 
     Properties properties = new Properties();
     properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getKafkaBootstrapServers());
@@ -37,10 +39,11 @@ public final class EventEmitterApp {
 
         ViewEventGenerator generator = new ViewEventGenerator();
 
-          do {
+          int sent = 0;
+          while (count == null || sent < count) {
               var viewevent = generator.next();
               String viewEventJson = ViewEvents.toJson(viewevent);
-              ProducerRecord<String, String> record = new ProducerRecord<>(config.getKafkaTopic(), viewevent.eventId(), viewEventJson);
+              ProducerRecord<String, String> record = new ProducerRecord<>(topic, viewevent.eventId(), viewEventJson);
 
               LOG.info("Sending event to checkout event-emitter topic: {}\n{}", record.topic(), viewEventJson);
               producer.send(record, ((metadata, exception) -> {
@@ -53,13 +56,38 @@ public final class EventEmitterApp {
                   }
               }));
 
-              try {
-                sleep(500);
-              } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting", e);
+              sent++;
+              if (count == null || sent < count) {
+                try {
+                  sleep(500);
+                } catch (InterruptedException e) {
+                  LOG.error("Interrupted while waiting", e);
+                }
               }
-          } while (true);
+          }
       }
 
+  }
+
+  static String parseTopic(String[] args, String defaultTopic) {
+    for (int i = 0; i < args.length - 1; i++) {
+      if (args[i].equals("--topic")) {
+        return args[i + 1];
+      }
+    }
+    return defaultTopic;
+  }
+
+  static Integer parseCount(String[] args) {
+    for (int i = 0; i < args.length - 1; i++) {
+      if (args[i].equals("--count")) {
+        int count = Integer.parseInt(args[i + 1]);
+        if (count < 1) {
+          throw new IllegalArgumentException("--count must be at least 1");
+        }
+        return count;
+      }
+    }
+    return null;
   }
 }
