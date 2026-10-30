@@ -7,8 +7,12 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class QualityCheckTopology {
+
+  private static final Logger LOG = LoggerFactory.getLogger(QualityCheckTopology.class);
 
   private QualityCheckTopology() {}
 
@@ -23,6 +27,7 @@ public final class QualityCheckTopology {
 
     evaluated
         .filter((key, evaluation) -> evaluation.passed())
+        .peek((key, evaluation) -> LOG.info("Sanitised event {}", evaluation.eventId()))
         .mapValues(Evaluation::payload)
         .to(kafka.outputTopic(), Produced.with(Serdes.String(), Serdes.String()));
 
