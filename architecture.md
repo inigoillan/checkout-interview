@@ -22,7 +22,7 @@ flowchart LR
     QG["Quality Gate<br/><b>Kafka Streams</b>"]
     CleanTopic[("Clean events topic<br/><b>Kafka</b>")]
     DLQ[("DLQ topic<br/><b>Kafka</b>")]
-    Count["Counter by Postcode per minute<br/><b>Flink</b>"]
+    Count["Counter by outward Postcode per minute<br/><b>Flink</b>"]
     LakeAgg[("Filesystem/S3 bucket</br>Partitioned by date and time")]
   end
   

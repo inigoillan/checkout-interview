@@ -42,11 +42,12 @@ class CountPipelineLateRoutingTest {
   void countsWindowsOnceAndRoutesLateEventsToDlq() throws Exception {
     List<TimedViewEvent> events =
         List.of(
-            event("on-time-1", SW1A, "2026-10-29T10:00:10Z"),
-            event("on-time-2", SW1A, "2026-10-29T10:01:05Z"),
-            event("advances-watermark", SW1A, "2026-10-29T10:31:00Z"),
-            event("late", SW1A, "2026-10-29T10:00:40Z"),
-            event("advances-further", EC1A, "2026-10-29T11:00:00Z"));
+            event("on-time-1", "SW1A 1AA", "2026-10-29T10:00:10Z"),
+            event("on-time-2", "SW1A 2AA", "2026-10-29T10:00:20Z"),
+            event("on-time-3", "SW1A 1AA", "2026-10-29T10:01:05Z"),
+            event("advances-watermark", "SW1A 1AA", "2026-10-29T10:31:00Z"),
+            event("late", "SW1A 2AA", "2026-10-29T10:00:40Z"),
+            event("advances-further", "EC1A 1BB", "2026-10-29T11:00:00Z"));
 
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setParallelism(1);
@@ -61,7 +62,7 @@ class CountPipelineLateRoutingTest {
     counts.sort(Comparator.comparingLong(row -> row.timeWindow));
     assertEquals(
         List.of(
-            new CountRow(millis("2026-10-29T10:00:00Z"), SW1A, 1),
+            new CountRow(millis("2026-10-29T10:00:00Z"), SW1A, 2),
             new CountRow(millis("2026-10-29T10:01:00Z"), SW1A, 1),
             new CountRow(millis("2026-10-29T10:31:00Z"), SW1A, 1),
             new CountRow(millis("2026-10-29T11:00:00Z"), EC1A, 1)),

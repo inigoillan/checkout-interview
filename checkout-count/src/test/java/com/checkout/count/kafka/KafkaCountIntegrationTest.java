@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class KafkaCountIntegrationTest {
 
   private static final String TOPIC = "view-events-kafka-it";
-  private static final String POSTCODE = "SW1A";
+  private static final String OUTWARD = "SW1A";
 
   @BeforeAll
   static void createTopic() throws Exception {
@@ -37,9 +37,9 @@ class KafkaCountIntegrationTest {
   @Test
   void windowsFireWhenOnePartitionIsIdle() throws Exception {
     CollectingSinks.reset();
-    KafkaSupport.produce(TOPIC, 0, "e1", POSTCODE, "2026-10-29T10:00:05Z");
-    KafkaSupport.produce(TOPIC, 0, "e2", POSTCODE, "2026-10-29T10:00:40Z");
-    KafkaSupport.produce(TOPIC, 0, "e3", POSTCODE, "2026-10-29T10:45:00Z");
+    KafkaSupport.produce(TOPIC, 0, "e1", "SW1A 1AA", "2026-10-29T10:00:05Z");
+    KafkaSupport.produce(TOPIC, 0, "e2", "SW1A 2AA", "2026-10-29T10:00:40Z");
+    KafkaSupport.produce(TOPIC, 0, "e3", "SW1A 1AA", "2026-10-29T10:45:00Z");
 
     CountConfig config =
         TestConfigs.config(
@@ -56,7 +56,7 @@ class KafkaCountIntegrationTest {
 
     JobClient job = env.executeAsync("kafka-idle-partition-it");
     try {
-      CountRow expected = new CountRow(millis("2026-10-29T10:00:00Z"), POSTCODE, 2);
+      CountRow expected = new CountRow(millis("2026-10-29T10:00:00Z"), OUTWARD, 2);
       Waiting.until(
           "count for the 10:00 window",
           Duration.ofSeconds(90),

@@ -2,7 +2,7 @@
 
 ## Functional requirements
 
-The checkout-count module aggregates view events from the [event-schema](../../checkout-event-schema) module to calculate 1 minute count over the following dimensions: postcode and time down to a 1 minute.
+The checkout-count module aggregates view events from the [event-schema](../../checkout-event-schema) module to calculate 1 minute count over the following dimensions: postcode (outward code only, e.g. `SW1A` for `SW1A 1AA`) and time down to a 1 minute.
 
 The latest data will be available to consumption, and it is the job of the consumer of the data to filter that data depending on whether they want to see incomplete hour data. In the case they want to filter the data out, they will need to filter the previous hour past 30 minutes after that hour has ended.
 
@@ -31,6 +31,8 @@ The output files should follow the schema:
 | count       | integer      |                  |
 
 time_window is the time in UTC when the window starts. time_window is, per the functional requirements, stored using minute granularity
+
+postcode holds the outward code only. The full postcode from the view event, spaced (`SW1A 1AA`) or unspaced (`SW1A1AA`), is reduced to the part before the inward code (`SW1A`)
 Partition keys are saved only as part of the path following the `date=YYYY-MM-DD/hour=HH` format with hours padded to 2 digits.
 Empty hours won't produce any files
 

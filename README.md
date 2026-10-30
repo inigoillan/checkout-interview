@@ -199,7 +199,7 @@ thread-safe shared instance).
 
 ## checkout-count
 
-Reads view events from `checkout.events.sanitised`, counts them per postcode in one-minute
+Reads view events from `checkout.events.sanitised`, counts them per outward postcode in one-minute
 tumbling windows, and writes Parquet files to S3. Events that arrive after their window has
 closed go to a `dlq` folder.
 
@@ -230,8 +230,8 @@ s3://checkout-lake-raw/counts/date=YYYY-MM-DD/hour=HH/part-*
 s3://checkout-lake-raw/dlq/date=YYYY-MM-DD/part-*
 ```
 
-Count rows have `time_window` (UTC window start, minute granularity), `postcode`, and
-`count`. Dead-letter rows have `payload` (the original JSON), `kafka_timestamp`, and
+Count rows have `time_window` (UTC window start, minute granularity), `postcode` (the outward
+code, e.g. `SW1A` for `SW1A 1AA`), and `count`. Dead-letter rows have `payload` (the original JSON), `kafka_timestamp`, and
 `processing_timestamp`, both in epoch milliseconds. Partition values appear only in the path.
 Hours with no events produce no files.
 

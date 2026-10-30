@@ -52,10 +52,10 @@ class CountEndToEndTest {
     CountJob.define(env, config);
     JobClient job = env.executeAsync("checkout-count-e2e");
     try {
-      KafkaSupport.produce(TOPIC, 0, "e1", "SW1A", "2026-10-29T10:00:10Z");
-      KafkaSupport.produce(TOPIC, 0, "e2", "SW1A", "2026-10-29T10:00:50Z");
-      KafkaSupport.produce(TOPIC, 0, "e3", "EC1A", "2026-10-29T10:01:10Z");
-      KafkaSupport.produce(TOPIC, 0, "e4", "SW1A", "2026-10-29T11:00:00Z");
+      KafkaSupport.produce(TOPIC, 0, "e1", "SW1A 1AA", "2026-10-29T10:00:10Z");
+      KafkaSupport.produce(TOPIC, 0, "e2", "SW1A 2AA", "2026-10-29T10:00:50Z");
+      KafkaSupport.produce(TOPIC, 0, "e3", "EC1A 1BB", "2026-10-29T10:01:10Z");
+      KafkaSupport.produce(TOPIC, 0, "e4", "SW1A 1AA", "2026-10-29T11:00:00Z");
 
       Waiting.until(
           "hour 10 counts in S3",
@@ -66,7 +66,7 @@ class CountEndToEndTest {
           Set.of("2026-10-29T10:00:00Z SW1A 2", "2026-10-29T10:01:00Z EC1A 1"),
           countRows(s3, tmp));
 
-      KafkaSupport.produce(TOPIC, 0, "late-1", "SW1A", "2026-10-29T10:00:20Z");
+      KafkaSupport.produce(TOPIC, 0, "late-1", "SW1A 1AA", "2026-10-29T10:00:20Z");
       String dlqPrefix = "dlq/date=" + LocalDate.now(ZoneOffset.UTC) + "/";
       Waiting.until(
           "late record in the dlq",

@@ -30,7 +30,7 @@ public final class CountPipeline {
   public void attach(DataStream<TimedViewEvent> events) {
     SingleOutputStreamOperator<CountRow> counts =
         events
-            .keyBy(event -> event.postcode, Types.STRING)
+            .keyBy(event -> OutwardPostcode.of(event.postcode), Types.STRING)
             .window(TumblingEventTimeWindows.of(WINDOW_SIZE))
             .sideOutputLateData(LATE_EVENTS)
             .aggregate(new CountAggregator(), new CountWindowFunction());
