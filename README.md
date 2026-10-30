@@ -137,7 +137,7 @@ Each prints `Hello world from <module>` via SLF4J/Log4j2 and stdout.
 the three long-running services (`checkout-ingestor`,
 `checkout-quality-check`, `checkout-count`), and the one-shot
 `checkout-event-emitter`. It also creates topics
-`checkout.events.raw`, `checkout.events.sanitised`, `checkout.counts` via `kafka-init`.
+`checkout.events.raw`, `checkout.events.sanitised`, `checkout.qualitycheck.dlq` via `kafka-init`.
 
 ```bash
 make up             # stage + docker compose up --build (foreground, compiles everything)
