@@ -21,7 +21,6 @@ flink-connector-files = { module = "org.apache.flink:flink-connector-files", ver
 flink-s3-fs-native = { module = "org.apache.flink:flink-s3-fs-native", version.ref = "flink" }
 flink-parquet = { module = "org.apache.flink:flink-parquet", version.ref = "flink" }
 flink-avro = { module = "org.apache.flink:flink-avro", version.ref = "flink" }
-flink-statebackend-rocksdb = { module = "org.apache.flink:flink-statebackend-rocksdb", version.ref = "flink" }
 flink-test-utils = { module = "org.apache.flink:flink-test-utils", version.ref = "flink" }
 avro = { module = "org.apache.avro:avro", version.ref = "avro" }
 parquet-avro = { module = "org.apache.parquet:parquet-avro", version.ref = "parquet" }

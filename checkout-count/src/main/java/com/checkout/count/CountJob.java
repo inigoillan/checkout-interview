@@ -34,7 +34,7 @@ public final class CountJob {
     CountConfig.S3Settings s3 = config.s3();
 
     Configuration conf = new Configuration();
-    conf.setString("state.backend.type", "rocksdb");
+    conf.setString("state.backend.type", "hashmap");
     conf.setString("state.checkpoints.dir", s3.checkpoints().location());
     conf.setString("s3.region", s3.region());
     setIfPresent(conf, "s3.endpoint", firstNonBlank(s3.endpoint(), System.getenv("AWS_ENDPOINT_URL")));

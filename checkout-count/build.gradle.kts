@@ -15,7 +15,6 @@ dependencies {
     implementation(libs.flink.connector.files)
     implementation(libs.flink.s3.fs.native)
     implementation(libs.flink.parquet)
-    implementation(libs.flink.statebackend.rocksdb)
     implementation(libs.kafka.clients)
     implementation(libs.slf4j.api)
     implementation(libs.aws.sdk.s3)

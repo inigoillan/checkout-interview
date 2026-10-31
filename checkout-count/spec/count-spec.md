@@ -13,7 +13,7 @@ This module uses Flink and Java as the base to perform the aggregations required
 
 ### Input data
 
-Data will be read from the output topic of the [qualitycheck](../../checkout-quality-check) module. This will come as a json view event
+Data will be read from the output topic of the [qualitycheck](../../checkout-quality-check) module. This will come as a json view event. Input has already passed the quality checks, so the invalid-input handling in the Logging section is a defensive safeguard only.
 
 
 ### Output file format and schema
@@ -33,7 +33,7 @@ The output files should follow the schema:
 time_window is the time in UTC when the window starts. time_window is, per the functional requirements, stored using minute granularity
 
 postcode holds the outward code only. The full postcode from the view event, spaced (`SW1A 1AA`) or unspaced (`SW1A1AA`), is reduced to the part before the inward code (`SW1A`)
-Partition keys are saved only as part of the path following the `date=YYYY-MM-DD/hour=HH` format with hours padded to 2 digits.
+Partition keys are saved only as part of the path following the `date=YYYY-MM-DD/hour=HH` format with hours padded to 2 digits. The `date` and `hour` fields in the table above are partition keys only, so they are not columns in the Parquet files.
 Empty hours won't produce any files
 
 ### Source code modularity principles
@@ -60,6 +60,14 @@ It is expected that the volumes of data are low, around 100k view events per day
 Postcode data could be skewed so some postcodes will have more traffic/events than others.
 
 
+### Logging
+
+Invalid input is skipped rather than failing the job. A WARN is logged for each rejected event in two cases:
+- Deserialization error: the record has no value, or its value can't be parsed as a view event.
+- Outward postcode extraction error: the postcode is missing or isn't a valid UK postcode.
+
+Each line includes the reason (`malformed_json` or `invalid_postcode`), the exception type, and the Kafka topic, partition, and offset. Logging shouldn't contain any identifiable data, so the payload and the postcode value are not logged. Rejected events are not sent to the DLQ, because invalid input is handled by the [quality check](../../checkout-quality-check) module.
+
 ### How Flink should be setup
 
 Flink needs to be setup using:
@@ -67,8 +75,8 @@ Flink needs to be setup using:
 - In order to manage out of order and late message arrival, we will use watermarks. The watermark should use a 30-minute bounded out-of-orderness on the view event timestamp. We won't allow any lateness as parquet files don't allow for upserts.  
 - Checkpointing is setup with the following features:
   - Unaligned Checkpoints to allow for more robust processing
-  - State checkpointing stored using RocksDB to avoid losing state
-  - Checkpoints will be stored in S3
+  - State checkpointing stored using an in memory HashMap as the data is expected to fit into memory
+  - Checkpoints will be stored in S3 for durable storage
   - Checkpointing interval set to 5 minutes
 - This setup of checkpointing will potentially generate a lot of files. We will consider creating a batch job to compact files in future versions.
 - Given the expected amount of data and to avoid creating too many files, the sink parallelism will be set to 1
