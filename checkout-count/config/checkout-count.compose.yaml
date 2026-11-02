@@ -12,7 +12,7 @@ s3:
     prefix: counts
   dlq:
     bucket: checkout-lake-raw
-    prefix: dlq
+    prefix: dlq/counts
   checkpoints:
     location: s3://checkout-checkpoints/checkout-count
 
@@ -20,7 +20,7 @@ flink:
   parallelism:
     sink: 1
   watermark:
-    bound: 30m
+    bound: 1m
     idleness: 1m
   checkpointing:
     interval: 5m

@@ -8,7 +8,7 @@ s3:
   endpoint: http://localstack:4566
   bucket: checkout-lake-raw
   landing-prefix: landing
-  dlq-prefix: dlq
+  dlq-prefix: dlq/ingestor
   access-key: test
   secret-key: test
 
