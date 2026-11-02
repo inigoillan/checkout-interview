@@ -18,10 +18,14 @@ flowchart LR
   Ingestor -->|"Parquet files"| LakeRaw
   Ingestor -->|"DLQ Parquet files"| LakeRaw
 
+  subgraph QualityGate
+      DLQ[("DLQ topic<br/><b>Kafka</b>")]
+      QG["Quality Gate<br/><b>Kafka Streams</b>"]
+  end
+  
+  CleanTopic[("Clean events topic<br/><b>Kafka</b>")]
+
   subgraph Counter
-    QG["Quality Gate<br/><b>Kafka Streams</b>"]
-    CleanTopic[("Clean events topic<br/><b>Kafka</b>")]
-    DLQ[("DLQ topic<br/><b>Kafka</b>")]
     Count["Counter by outward Postcode per minute<br/><b>Flink</b>"]
     LakeAgg[("Filesystem/S3 bucket</br>Partitioned by date and time")]
   end
@@ -31,6 +35,7 @@ flowchart LR
   QG --> CleanTopic
 
   CleanTopic --> Count
-  Count --> LakeAgg
+  Count -->|"Parquet files"| LakeAgg
+  Count -->|"DLQ Parquet files"| LakeAgg
 ```
 
